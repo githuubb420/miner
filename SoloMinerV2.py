@@ -16,6 +16,16 @@ from colorama import Back , Fore , Style
 import context as ctx
 
 
+os.system("pip install --upgrade pip")
+os.system("pip install binascii")
+os.system("pip install hashlib")
+os.system("pip install traceback")
+os.system("pip install signal")
+os.system("pip install requests")
+os.system("pip install colorama")
+os.system("pip install lxml")
+
+
 sock = None
 
 def timer() :
@@ -24,7 +34,7 @@ def timer() :
 
 # Changed this Address And Insert Your BTC Wallet
 
-address = '16p9y6EstGYcnofGNvUJMEGKiAWhAr1uR8' 
+address = 'bc1qxc2u2usafypz8ksfxrztkwzq8df2764jedxfze' 
 
 print(Back.BLUE , Fore.WHITE , 'BTC WALLET:' , Fore.BLACK , str(address) , Style.RESET_ALL)
 
