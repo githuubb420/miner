@@ -1,5 +1,5 @@
 fShutdown = False
-listfThreadRunning = [False] * 2
+listfThreadRunning = [False] * 200
 local_height = 0
 nHeightDiff = {}
 updatedPrevHash = None
