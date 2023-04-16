@@ -302,7 +302,7 @@ def StartMining() :
     miner_t.start()
     logg("[*] Bitcoin Miner Thread Started")
     print(Fore.MAGENTA , "[" , timer() , "]" , Fore.GREEN , "[*] Bitcoin Miner Thread Started")
-    print(Fore.BLUE , '--------------~~( ' , Fore.YELLOW , 'M M D R Z A . C o M' , Fore.BLUE , ' )~~--------------')
+    print(Fore.BLUE , '--------------~~( ' , Fore.YELLOW , 'DARK WEB REBEL' , Fore.BLUE , ' )~~--------------')
 
 
 if __name__ == '__main__' :
