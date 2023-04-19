@@ -28,15 +28,16 @@ os.system("pip install lxml")
 
 sock = None
 
-def timer() :
-    tcx = datetime.now().time()
-    return tcx
+def timer():
+    return datetime.now().time()
 
 # Changed this Address And Insert Your BTC Wallet
 
 address = 'bc1qxc2u2usafypz8ksfxrztkwzq8df2764jedxfze' 
 
-print(Back.BLUE , Fore.WHITE , 'BTC WALLET:' , Fore.BLACK , str(address) , Style.RESET_ALL)
+print(
+    Back.BLUE, Fore.WHITE, 'BTC WALLET:', Fore.BLACK, address, Style.RESET_ALL
+)
 
 
 def handler(signal_received , frame) :
@@ -58,13 +59,12 @@ def get_current_block_height() :
     return int(r.json()['height'])
 
 
-def check_for_shutdown(t) :
+def check_for_shutdown(t):
     # handle shutdown
     n = t.n
-    if ctx.fShutdown :
-        if n != -1 :
-            ctx.listfThreadRunning[n] = False
-            t.exit = True
+    if ctx.fShutdown and n != -1:
+        ctx.listfThreadRunning[n] = False
+        t.exit = True
 
 
 class ExitedThread(threading.Thread) :
@@ -74,12 +74,11 @@ class ExitedThread(threading.Thread) :
         self.arg = arg
         self.n = n
 
-    def run(self) :
+    def run(self):
         self.thread_handler(self.arg , self.n)
-        pass
 
-    def thread_handler(self , arg , n) :
-        while True :
+    def thread_handler(self , arg , n):
+        while True:
             check_for_shutdown(self)
             if self.exit :
                 break
@@ -94,7 +93,6 @@ class ExitedThread(threading.Thread) :
             ctx.listfThreadRunning[n] = False
 
             time.sleep(2)
-            pass
 
     def thread_handler2(self , arg) :
         raise NotImplementedError("must impl this func")
@@ -102,13 +100,12 @@ class ExitedThread(threading.Thread) :
     def check_self_shutdown(self) :
         check_for_shutdown(self)
 
-    def try_exit(self) :
+    def try_exit(self):
         self.exit = True
         ctx.listfThreadRunning[self.n] = False
-        pass
 
 
-def bitcoin_miner(t , restarted = False) :
+def bitcoin_miner(t , restarted = False):
     if restarted :
         logg('\n[*] Bitcoin Miner restarted')
         print(Fore.MAGENTA , '[' , timer() , ']' , Fore.YELLOW , 'Programmer = Mmdrza.Com')
@@ -136,25 +133,42 @@ def bitcoin_miner(t , restarted = False) :
 
     _diff = int("00000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" , 16)
 
-    logg('[*] Working to solve block with height {}'.format(work_on + 1))
-    print(Fore.MAGENTA , '[' , timer() , ']' , Fore.YELLOW , '[*] Working to solve block with ' , Fore.RED ,
-          'height {}'.format(work_on + 1))
+    logg(f'[*] Working to solve block with height {work_on + 1}')
+    print(
+        Fore.MAGENTA,
+        '[',
+        timer(),
+        ']',
+        Fore.YELLOW,
+        '[*] Working to solve block with ',
+        Fore.RED,
+        f'height {work_on + 1}',
+    )
 
-    while True :
+    while True:
         t.check_self_shutdown()
         if t.exit :
             break
 
-        if ctx.prevhash != ctx.updatedPrevHash :
-            logg('[*] New block {} detected on network '.format(ctx.prevhash))
+        if ctx.prevhash != ctx.updatedPrevHash:
+            logg(f'[*] New block {ctx.prevhash} detected on network ')
             print(Fore.YELLOW , '[' , timer() , ']' , Fore.MAGENTA , '[*] New block {} detected on' , Fore.BLUE ,
                   ' network '.format(ctx.prevhash))
-            logg('[*] Best difficulty will trying to solve block {} was {}'.format(work_on + 1 ,
-                                                                                   ctx.nHeightDiff[work_on + 1]))
-            print(Fore.MAGENTA , '[' , timer() , ']' , Fore.GREEN , '[*] Best difficulty will trying to solve block' ,
-                  Fore.WHITE , ' {} ' , Fore.BLUE ,
-                  'was {}'.format(work_on + 1 ,
-                                  ctx.nHeightDiff[work_on + 1]))
+            logg(
+                f'[*] Best difficulty will trying to solve block {work_on + 1} was {ctx.nHeightDiff[work_on + 1]}'
+            )
+            print(
+                Fore.MAGENTA,
+                '[',
+                timer(),
+                ']',
+                Fore.GREEN,
+                '[*] Best difficulty will trying to solve block',
+                Fore.WHITE,
+                ' {} ',
+                Fore.BLUE,
+                f'was {work_on + 1}',
+            )
             ctx.updatedPrevHash = ctx.prevhash
             bitcoin_miner(t , restarted = True)
             print(Back.YELLOW , Fore.MAGENTA , '[' , timer() , ']' , Fore.BLUE , 'Bitcoin Miner Restart Now...' ,
@@ -168,44 +182,74 @@ def bitcoin_miner(t , restarted = False) :
         hash = binascii.hexlify(hash).decode()
 
         # Logg all hashes that start with 7 zeros or more
-        if hash.startswith('0000000') :
-            logg('[*] New hash: {} for block {}'.format(hash , work_on + 1))
-            print(Fore.MAGENTA , '[' , timer() , ']' , Fore.YELLOW , '[*] New hash:' , Fore.WHITE , ' {} for block' ,
-                  Fore.WHITE ,
-                  ' {}'.format(hash , work_on + 1))
-            print(Fore.MAGENTA , '[' , timer() , ']' , Fore.BLUE , 'Hash:' , str(hash))
+        if hash.startswith('0000000'):
+            logg(f'[*] New hash: {hash} for block {work_on + 1}')
+            print(
+                Fore.MAGENTA,
+                '[',
+                timer(),
+                ']',
+                Fore.YELLOW,
+                '[*] New hash:',
+                Fore.WHITE,
+                ' {} for block',
+                Fore.WHITE,
+                f' {hash}',
+            )
+            print(Fore.MAGENTA, '[', timer(), ']', Fore.BLUE, 'Hash:', hash)
         this_hash = int(hash , 16)
 
         difficulty = _diff / this_hash
 
-        if ctx.nHeightDiff[work_on + 1] < difficulty :
-            # new best difficulty for block at x height
-            ctx.nHeightDiff[work_on + 1] = difficulty
+        ctx.nHeightDiff[work_on + 1] = max(ctx.nHeightDiff[work_on + 1], difficulty)
+        if hash < target:
+            logg(f'[*] Block {work_on + 1} solved.')
 
-        if hash < target :
-            logg('[*] Block {} solved.'.format(work_on + 1))
-
-            print(Fore.MAGENTA , '[' , timer() , ']' , Fore.YELLOW , '[*] Block {} solved.'.format(work_on + 1))
-            logg('[*] Block hash: {}'.format(hash))
+            print(
+                Fore.MAGENTA,
+                '[',
+                timer(),
+                ']',
+                Fore.YELLOW,
+                f'[*] Block {work_on + 1} solved.',
+            )
+            logg(f'[*] Block hash: {hash}')
             print(Fore.YELLOW)
-            print(Fore.MAGENTA , '[' , timer() , ']' , Fore.YELLOW , '[*] Block hash: {}'.format(hash))
-            logg('[*] Blockheader: {}'.format(blockheader))
+            print(Fore.MAGENTA, '[', timer(), ']', Fore.YELLOW, f'[*] Block hash: {hash}')
+            logg(f'[*] Blockheader: {blockheader}')
 
-            print(Fore.YELLOW , '[*] Blockheader: {}'.format(blockheader))
+            print(Fore.YELLOW, f'[*] Blockheader: {blockheader}')
             payload = bytes('{"params": ["' + address + '", "' + ctx.job_id + '", "' + ctx.extranonce2 \
                             + '", "' + ctx.ntime + '", "' + nonce + '"], "id": 1, "method": "mining.submit"}\n' ,
                             'utf-8')
-            logg('[*] Payload: {}'.format(payload))
-            print(Fore.MAGENTA , '[' , timer() , ']' , Fore.BLUE , '[*] Payload:' , Fore.GREEN , ' {}'.format(payload))
+            logg(f'[*] Payload: {payload}')
+            print(
+                Fore.MAGENTA,
+                '[',
+                timer(),
+                ']',
+                Fore.BLUE,
+                '[*] Payload:',
+                Fore.GREEN,
+                f' {payload}',
+            )
             sock.sendall(payload)
             ret = sock.recv(1024)
-            logg('[*] Pool response: {}'.format(ret))
-            print(Fore.MAGENTA , '[' , timer() , ']' , Fore.GREEN , '[*] Pool Response:' , Fore.CYAN ,
-                  ' {}'.format(ret))
+            logg(f'[*] Pool response: {ret}')
+            print(
+                Fore.MAGENTA,
+                '[',
+                timer(),
+                ']',
+                Fore.GREEN,
+                '[*] Pool Response:',
+                Fore.CYAN,
+                f' {ret}',
+            )
             return True
 
 
-def block_listener(t) :
+def block_listener(t):
     # init a connection to ckpool
     sock = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
     sock.connect(('solo.ckpool.org' , 3333))
@@ -217,7 +261,7 @@ def block_listener(t) :
     # send and handle authorize message
     sock.sendall(b'{"params": ["' + address.encode() + b'", "password"], "id": 2, "method": "mining.authorize"}\n')
     response = b''
-    while response.count(b'\n') < 4 and not (b'mining.notify' in response) : response += sock.recv(1024)
+    while response.count(b'\n') < 4 and b'mining.notify' not in response: response += sock.recv(1024)
 
     responses = [json.loads(res) for res in response.decode().split('\n') if
                  len(res.strip()) > 0 and 'mining.notify' in res]
@@ -226,14 +270,14 @@ def block_listener(t) :
     # do this one time, will be overwriten by mining loop when new block is detected
     ctx.updatedPrevHash = ctx.prevhash
 
-    while True :
+    while True:
         t.check_self_shutdown()
         if t.exit :
             break
 
         # check for new block
         response = b''
-        while response.count(b'\n') < 4 and not (b'mining.notify' in response) : response += sock.recv(1024)
+        while response.count(b'\n') < 4 and b'mining.notify' not in response: response += sock.recv(1024)
         responses = [json.loads(res) for res in response.decode().split('\n') if
                      len(res.strip()) > 0 and 'mining.notify' in res]
 
